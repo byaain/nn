@@ -90,23 +90,23 @@ class GaussianMixtureModel:
         # 初始化协方差矩阵为单位矩阵
         self.sigma = np.array([np.eye(n_features) for _ in range(self.n_components)])
 
-        log_likelihood = -np.inf
-        for iter in range(self.max_iter):
+        log_likelihood = -np.inf  # 初始化对数似然值为负无穷
+        for iter in range(self.max_iter): # 开始EM算法的主循环
             # E步：计算后验概率
 
-            log_prob = np.zeros((n_samples, self.n_components))
-            for k in range(self.n_components):
-                log_prob[:, k] = np.log(self.pi[k]) + self._log_gaussian(X, self.mu[k], self.sigma[k])
-            log_prob_sum = logsumexp(log_prob, axis=1, keepdims=True)
-            gamma = np.exp(log_prob - log_prob_sum)
+            log_prob = np.zeros((n_samples, self.n_components)) # 初始化对数概率矩阵，形状为(样本数 × 成分数)
+            for k in range(self.n_components): # 遍历每个高斯成分
+                log_prob[:, k] = np.log(self.pi[k]) + self._log_gaussian(X, self.mu[k], self.sigma[k]) # 计算第k个高斯分布的对数概率密度
+            log_prob_sum = logsumexp(log_prob, axis=1, keepdims=True) # 使用logsumexp实现数值稳定的概率求和
+            gamma = np.exp(log_prob - log_prob_sum) # 计算后验概率矩阵gamma(也称为响应度矩阵)
 
             # M步：更新参数
-            Nk = np.sum(gamma, axis=0)
-            self.pi = Nk / n_samples
-            new_mu = np.zeros_like(self.mu)
+            Nk = np.sum(gamma, axis=0) # 计算每个高斯成分的"有效样本数"（即属于该成分的样本概率之和）
+            self.pi = Nk / n_samples # 更新混合权重π：各成分的样本占比
+            new_mu = np.zeros_like(self.mu) # 初始化新均值和新协方差矩阵的存储空间
             new_sigma = np.zeros_like(self.sigma)
             
-            for k in range(self.n_components):
+            for k in range(self.n_components): # 遍历每个高斯成分更新参数
                 # 更新均值
 
                 new_mu[k] = np.sum(gamma[:, k, None] * X, axis=0) / Nk[k]

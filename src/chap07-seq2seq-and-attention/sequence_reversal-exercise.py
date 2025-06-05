@@ -8,10 +8,15 @@
 
 # In[1]:
 
+# 基础科学计算库，提供高效的多维数组操作和数学函数
 import numpy as np
+# 深度学习框架，用于构建和训练神经网络
 import tensorflow as tf
+# Python标准库中的数据结构模块，提供特殊容器类型
 import collections
+# 从TensorFlow中导入Keras API（官方高阶API）
 from tensorflow import keras
+# 从Keras中导入常用组件
 from tensorflow.keras import layers, optimizers, datasets
 import os,sys,tqdm
 

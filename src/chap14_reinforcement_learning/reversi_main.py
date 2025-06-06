@@ -29,13 +29,9 @@ for i_episode in range(max_epochs):
 
         ################### 黑棋（随机策略） ###################
         env.render()  # 打印当前棋盘状态
-        
-        # 获取当前黑棋可落子的位置列表
-        # enables是一个包含合法位置索引的列表
-        enables = env.possible_actions  
-        
-        # 判断是否有合法落子的位置
-        if len(enables) == 0:
+        enables = env.possible_actions  # 获取当前黑棋可落子的位置列表
+
+        if len(enables) == 0:# 判断是否有合法落子的位置
             # 没有可落子位置，则选择“跳过”操作，编码为 board_size^2 + 1
             action_ = env.board_size**2 + 1
         else:
@@ -62,12 +58,14 @@ for i_episode in range(max_epochs):
 
         # 如果对局结束
         if done:
+            # 打印游戏结束信息，显示总回合数(t+1是因为索引从0开始)
             print("Episode finished after {} timesteps".format(t+1))
             # 统计黑棋得分（棋盘中为1的个数）
             black_score = len(np.where(env.state[0,:,:]==1)[0])
-            if black_score > 32:
+            # 判断游戏胜负（棋盘总位置数通常为64）
+            if black_score > 32:    # 黑棋数量超过一半
                 print("黑棋赢了！")
-            else:
+            else:                   # 黑棋数量不超过一半（含平局情况）
                 print("白棋赢了！")
-            print(black_score)  # 打印黑棋得分
-            break #结束代码
+            print(black_score)      # 打印黑棋得分
+            break # 结束代码

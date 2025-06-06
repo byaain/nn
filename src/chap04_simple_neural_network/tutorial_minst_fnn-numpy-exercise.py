@@ -9,7 +9,6 @@ import os
 import numpy as np
 # 导入TensorFlow深度学习框架
 import tensorflow as tf
-import numpy as np
 from tqdm import tqdm
 # 从TensorFlow中导入Keras高级API
 from tensorflow import keras
@@ -17,19 +16,19 @@ from tensorflow import keras
 from tensorflow.keras import layers, optimizers, datasets
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # or any {'0', '1', '2'}
-#定义了一个函数mnist_dataset()，用于加载并预处理 MNIST 数据集
+# 定义了一个函数mnist_dataset()，用于加载并预处理 MNIST 数据集
 def mnist_dataset():
     (x, y), (x_test, y_test) = datasets.mnist.load_data()
-    #normalize
+    # normalize 归一化：将像素值从 [0, 255] 缩放到 [0, 1] 范围内
     x = x/255.0
     x_test = x_test/255.0
 
-
+    # 返回处理后的训练集和测试集
     return (x, y), (x_test, y_test)
 
 # ## Demo numpy based auto differentiation
 # In[3]:
-import numpy as np
+
 
 # 定义矩阵乘法层
 class Matmul:
@@ -41,7 +40,6 @@ class Matmul:
         h = np.matmul(x, W)
         # 缓存输入 x 和 权重 W，以便在反向传播中计算梯度
         self.mem = {'x': x, 'W':W}
-        # 缓存输入 x 和 权重 W，以便在反向传播中计算梯度
         return h
     
     def backward(self, grad_y):
@@ -56,7 +54,7 @@ class Matmul:
         
         '''计算矩阵乘法的对应的梯度'''
         grad_x = np.matmul(grad_y, W.T)
-        grad_W = np.matmul(x.T, grad_y)
+        grad_W = np.matmul(x.T, grad_y)    #执行矩形乘法运算，计算梯度
       
         return grad_x, grad_W
 
@@ -64,12 +62,12 @@ class Matmul:
 class Relu:
     def __init__(self):
         self.mem = {}
-        #初始化记忆字典，用于存储前向传播的输入
+        # 初始化记忆字典，用于存储前向传播的输入
     def forward(self, x):
-        #保存输入x，供反向传播使用
+        # 保存输入x，供反向传播使用
         self.mem['x'] = x
         return np.where(x > 0, x, np.zeros_like(x))
-    #ReLU激活函数：x>0时输出x，否则输出0
+    # ReLU激活函数：x>0时输出x，否则输出0
     def backward(self, grad_y):
         '''
         grad_y: same shape as x
@@ -228,7 +226,6 @@ class Log:
 
 # In[6]:
 
-import tensorflow as tf
 
 label = np.zeros_like(x) #创建了一个与x形状相同的全零标签矩阵
 label[0, 1]=1.
@@ -237,7 +234,7 @@ label[2, 3]=1
 label[3, 5]=1
 label[4, 0]=1
 
-x = np.random.normal(size = [5, 6]) # 5个样本，每个样本6维特征
+x = np.random.normal(size = [5, 6])  # 5个样本，每个样本6维特征
 W1 = np.random.normal(size = [6, 5]) # 第一层权重 (6→5)
 W2 = np.random.normal(size = [5, 6]) # 第二层权重 (5→6)
 
@@ -357,7 +354,7 @@ def train(model, train_data, train_label, epochs=50):
     losses = []
     accuracies = []
     num_samples = train_data.shape[0]
-    from tqdm import tqdm  # 添加tqdm导入  
+    
     for epoch in tqdm(range(epochs), desc="Training"):
         # 打乱数据顺序
         indices = np.random.permutation(num_samples)

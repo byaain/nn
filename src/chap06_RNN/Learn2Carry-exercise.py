@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 # # 加法进位实验
 #
-
 # <img src="https://github.com/JerrikEph/jerrikeph.github.io/raw/master/Learn2Carry.png" width=650>
 
 # In[1]:
@@ -28,14 +26,18 @@ import os,sys,tqdm
 
 # In[2]:
 
+def gen_data_batch(batch_size: int, start: int, end: int) -> tuple:
+    """生成包含随机整数对及其和的批量数据。
 
-def gen_data_batch(batch_size, start, end):
-    '''在(start, end)区间采样生成一个batch的整型的数据
-    Args :
-        batch_size: batch_size
-        start: 开始数值
-        end: 结束数值
-    '''
+    Args:
+        batch_size: 批量大小，必须是正整数
+        start: 随机数范围起始值(包含)
+        end: 随机数范围结束值(不包含)
+
+    Returns:
+        tuple: 包含三个numpy数组的元组(numbers_1, numbers_2, results)，
+               每个数组形状为(batch_size,)
+    """
     numbers_1 = np.random.randint(start, end, batch_size)
     numbers_2 = np.random.randint(start, end, batch_size)
     results = numbers_1 + numbers_2
@@ -58,7 +60,7 @@ def convertDigits2Num(Digits):
     return Num
 
 def pad2len(lst, length, pad=0):
-    '''将一个列表用`pad`填充到`length`的长度 例如 pad2len([1, 3, 2, 3], 6, pad=0) ==> [1, 3, 2, 3, 0, 0]
+    '''将一个列表用`pad`填充到`length`的长度,例如 pad2len([1, 3, 2, 3], 6, pad=0) ==> [1, 3, 2, 3, 0, 0]
     '''
     lst+=[pad]*(length - len(lst))
     return lst
@@ -98,17 +100,16 @@ def prepare_batch(Nums1, Nums2, results, maxlen):
     return Nums1, Nums2, results
 
 
+
 # # 建模过程， 按照图示完成建模
 
 # In[3]:
-
 
 class myRNNModel(keras.Model):
     def __init__(self):
         super(myRNNModel, self).__init__()
         self.embed_layer = tf.keras.layers.Embedding(10, 32,
                                                     batch_input_shape = [None, None])
-
         self.rnncell = tf.keras.layers.SimpleRNNCell(64)
         self.rnn_layer = tf.keras.layers.RNN(self.rnncell, return_sequences = True)
         self.dense = tf.keras.layers.Dense(10)
@@ -122,7 +123,6 @@ class myRNNModel(keras.Model):
 
 
 # In[4]:
-
 
 @tf.function
 def compute_loss(logits, labels):
@@ -152,7 +152,7 @@ def train(steps, model, optimizer):
                               tf.constant(results, dtype=tf.int32))
         if step%50 == 0:
             print('step', step, ': loss', loss.numpy())
-
+            
     return loss
 
 def evaluate(model):
@@ -187,15 +187,7 @@ evaluate(model)
 
 
 
-
 # In[ ]:
-
-
-
-
-
-# In[ ]:
-
 
 
 
@@ -205,9 +197,12 @@ evaluate(model)
 
 
 
-
 # In[ ]:
 
+
+
+
+# In[ ]:
 
 
 

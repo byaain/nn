@@ -13,10 +13,11 @@ def identity_basis(x):
     """恒等基函数"""
     return np.expand_dims(x, axis=1)
 
-
+# 生成多项式基函数
 def multinomial_basis(x, feature_num=10):
     """多项式基函数"""
     x = np.expand_dims(x, axis=1)  # shape(N, 1)
+# 初始化特征列表
     feat = [x]
     for i in range(2, feature_num + 1):
         feat.append(x**i)
@@ -46,14 +47,14 @@ def load_data(filename, basis_func=gaussian_basis):
     with open(filename, "r") as f:
         for line in f:
             # 改进: 转换为list
-            xys.append(list(map(float, line.strip().split())))
-        xs, ys = zip(*xys)
-        xs, ys = np.asarray(xs), np.asarray(ys)
+            xys.append(list(map(float, line.strip().split()))) # 读取每行数据
+        xs, ys = zip(*xys) # 解压为特征和标签
+        xs, ys = np.asarray(xs), np.asarray(ys) # 转换为numpy数组
         
-        o_x, o_y = xs, ys
-        phi0 = np.expand_dims(np.ones_like(xs), axis=1)
-        phi1 = basis_func(xs)
-        xs = np.concatenate([phi0, phi1], axis=1)
+        o_x, o_y = xs, ys # 保存原始数据
+        phi0 = np.expand_dims(np.ones_like(xs), axis=1) # 添加偏置项（全1列）
+        phi1 = basis_func(xs) # 应用基函数变换
+        xs = np.concatenate([phi0, phi1], axis=1) # 拼接偏置和变换后的特征
         return (np.float32(xs), np.float32(ys)), (o_x, o_y)
 
 
@@ -105,7 +106,7 @@ def train_one_step(model, xs, ys):
 
 @tf.function
 def predict(model, xs):
-    y_preds = model(xs)
+    y_preds = model(xs)     # 模型前向传播
     return y_preds
 
 
@@ -139,4 +140,5 @@ plt.title("Linear Regression")
 # 虚线网格，半透明灰色
 plt.grid(True, linestyle="--", alpha=0.7, color="gray")
 plt.legend(["train", "test", "pred"])
+plt.tight_layout()  # 自动调整布局
 plt.show()

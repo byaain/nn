@@ -27,6 +27,7 @@ def load_data(filename):
 def identity_basis(x):
     # 在 x 的最后一个维度上增加一个维度，将其转换为二维数组
     # 用于适配线性回归的矩阵运算格式
+    # 通过 np.expand_dims，将 x 转换为列向量的形式，形状变为 (len(x), 1)
     ret = np.expand_dims(x, axis=1)
     return ret
 
@@ -38,12 +39,13 @@ def multinomial_basis(x, feature_num=10):
     """多项式基函数"""
     # 在 x 的最后一个维度上增加一个维度，将其转换为二维数组
     x = np.expand_dims(x, axis=1)  # shape(N, 1)
+    #可以替换成 x = identity_basis(x)
     # ==========
     # todo '''请实现多项式基函数'''
     # 在 x 的最后一个维度上增加一个维度，将其转换为三维数组
     # 通过列表推导式创建各次项，最后在列方向拼接合并
     x = np.expand_dims(x, axis=1)  # shape(N, 1)
-    # 生成 1, x, x^2, ..., x^(feature_num-1)
+    # 生成 x, x^2, ..., x^(feature_num)
     ret = [x**i for i in range(1, feature_num + 1)]
     # 将生成的列表合并成 shape(N, feature_num) 的二维数组
     ret = np.concatenate(ret, axis=1)
@@ -197,8 +199,11 @@ def main(x_train, y_train, use_gradient_descent=False):
 
     # 定义预测函数
     def f(x):
+        # 创建一个全为1的列向量，形状与输入x相同，但增加了一个维度
         phi0 = np.expand_dims(np.ones_like(x), axis=1)
+        # 调用basis_func函数，对输入x进行某种变换，得到基函数的值
         phi1 = basis_func(x)
+        # 将phi0和phi1沿着列方向（axis=1）拼接起来，形成设计矩阵phi
         phi = np.concatenate([phi0, phi1], axis=1)
         if use_gradient_descent and w_gd is not None:
             return np.dot(phi, w_gd)
@@ -261,11 +266,11 @@ if __name__ == "__main__":
     plt.ylabel("y")  # 设置y轴的标签
     plt.title("Linear Regression")  # 设置图表标题
     plt.legend(["train", "test", "pred"])  # 添加图例，表示每条线的含义
-    plt.plot(x_train, y_train, "ro", markersize=3)  # 红色点为训练集数据
-    plt.plot(x_test, y_test, "k")  # 红色点为训练集数据
-    plt.plot(x_test, y_test_pred, "k")  # 黑线为预测值（可以用其他颜色区分）
-    plt.xlabel("x")  # 设置x轴的标签
-    plt.ylabel("y")  # 设置y轴的标签
-    plt.title("Linear Regression")  # 设置图表标题
-    plt.legend(["train", "test", "pred"])  # 添加图例，表示每条线的含义 # 添加图例，表示每条线的含义
+    #plt.plot(x_train, y_train, "ro", markersize=3)  # 红色点为训练集数据
+    #plt.plot(x_test, y_test, "k")  # 红色点为训练集数据
+    #plt.plot(x_test, y_test_pred, "k")  # 黑线为预测值（可以用其他颜色区分）
+    #plt.xlabel("x")  # 设置x轴的标签
+    #plt.ylabel("y")  # 设置y轴的标签
+    #plt.title("Linear Regression")  # 设置图表标题
+    #plt.legend(["train", "test", "pred"])  # 添加图例，表示每条线的含义 # 添加图例，表示每条线的含义
     plt.show()

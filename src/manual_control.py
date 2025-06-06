@@ -157,15 +157,15 @@ except ImportError:
 # ==============================================================================
 
 
-def find_weather_presets():# 定义一个正则表达式，用于将 PascalCase 格式的字符串拆分成单词
-    rgx = re.compile('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)') # 定义一个 lambda 函数，将类名如 "ClearNoon" 拆分为 "Clear Noon"
-    name = lambda x: ' '.join(m.group(0) for m in rgx.finditer(x))# 从 carla.WeatherParameters 中提取所有以大写字母开头的属性名
-    presets = [x for x in dir(carla.WeatherParameters) if re.match('[A-Z].+', x)]# 返回包含 (天气参数对象, 格式化后的名称) 的元组列表
+def find_weather_presets():                                                        # 定义一个正则表达式，用于将 PascalCase 格式的字符串拆分成单词
+    rgx = re.compile('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)')      # 定义一个 lambda 函数，将类名如 "ClearNoon" 拆分为 "Clear Noon"
+    name = lambda x: ' '.join(m.group(0) for m in rgx.finditer(x))                 # 从 carla.WeatherParameters 中提取所有以大写字母开头的属性名
+    presets = [x for x in dir(carla.WeatherParameters) if re.match('[A-Z].+', x)]  # 返回包含 (天气参数对象, 格式化后的名称) 的元组列表
     return [(getattr(carla.WeatherParameters, x), name(x)) for x in presets]
 
 
-def get_actor_display_name(actor, truncate=250):# 提取 actor 的类型标识符，并将其格式化为更易读的名称（例如 vehicle.tesla.model3 -> Tesla Model3）
-    name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:]) # 如果名称过长，则进行截断，并在末尾加上省略号（…）
+def get_actor_display_name(actor, truncate=250):                                   # 提取 actor 的类型标识符，并将其格式化为更易读的名称（例如 vehicle.tesla.model3 -> Tesla Model3）
+    name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])        # 如果名称过长，则进行截断，并在末尾加上省略号（…）
     return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
 
 
@@ -685,10 +685,14 @@ class KeyboardControl(object):
             self._control.speed = .01
             # 根据时间增量增加偏航角(右转)
             self._rotation.yaw += 0.08 * milliseconds
+        # 处理前进 (W键或上箭头)
         if keys[K_UP] or keys[K_w]:
             self._control.speed = world.player_max_speed_fast if pygame.key.get_mods() & KMOD_SHIFT else world.player_max_speed
+        # 空格键控制跳跃
         self._control.jump = keys[K_SPACE]
+        # 将偏航角四舍五入到小数点后1位(防止过度旋转)
         self._rotation.yaw = round(self._rotation.yaw, 1)
+        # 根据当前旋转角度设置前进方向向量
         self._control.direction = self._rotation.get_forward_vector()
 
     @staticmethod

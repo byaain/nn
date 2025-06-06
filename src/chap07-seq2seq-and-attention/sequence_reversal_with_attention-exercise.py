@@ -37,6 +37,19 @@ def randomString(stringLength):
     return ''.join(random.choice(letters) for i in range(stringLength))
 
 def get_batch(batch_size, length):
+    """
+    生成一个批次的序列反转任务数据
+    
+    参数:
+        batch_size: 批次大小
+        length: 每个序列的长度
+        
+    返回:
+        batched_examples: 原始字符串列表
+        enc_x: 编码器输入序列 (整数编码)
+        dec_x: 解码器输入序列 (添加起始标记)
+        y: 目标序列 (反转后的序列)
+    """
     batched_examples = [randomString(length) for i in range(batch_size)]
     enc_x = [[ord(ch)-ord('A')+1 for ch in list(exp)] for exp in batched_examples]
     y = [[o for o in reversed(e_idx)] for e_idx in enc_x]
